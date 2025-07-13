@@ -1,0 +1,143 @@
+openapi: 3.0.1
+info:
+  title: Ticket Booking service
+  version: 1.0.0
+
+paths:
+  /tickets/event/{eventId}/seat/{seatNumber}/availability:
+    get:
+      summary: Check seat availability
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema: { type: string }
+        - name: seatNumber
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Seat availability info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeatAvailabilityResponse'
+
+  /tickets/reserve:
+    post:
+      summary: Tentatively reserve a seat
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#components/schemas/TicketReserveResponse'
+
+  /tickets/confirm:
+    post:
+      summary: Confirm a reserved seat (after payment)
+      parameters:
+        - name: ticketId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfirmTicketReq'
+        responses:
+          '200':
+            description: Confirmation Response
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/TicketConfirmResponse'
+
+  /tickets/{ticketId}:
+    get:
+      summary: Get Ticket Details
+      parameters:
+        - name: ticketId
+          in: path
+          required: true
+          schema: { type: string }
+      response:
+        '200':
+          description: Ticket Details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+
+components:
+  schemas:
+    TicketReserveResponse:
+      type: object
+      properties:
+        ticketId: {type: string}
+        status: {type: string}
+        eventId: {type: string}
+        message: {type: string}
+    TicketConfirmResponse:
+      type: object
+      properties:
+        ticketId: { type: string }
+        status: { type: string }
+        message: { type: string }
+    Ticket:
+      type: object
+      properties:
+        id: {type: string}
+        ticketId: { type: string }
+        eventId: { type: string }
+        userId: { type: string }
+        seatNumber: {type: string}
+        status:
+          type: string
+          enum: [RESERVED, CONFIRMED]
+        pricePaid:
+          type: number
+          format: double
+        promotionCode:
+          type: string
+        discountApplied:
+          type: number
+          format: double
+        qrCodeData:
+          type: string
+        bookedAt:
+          type: string
+          format: local-date-time
+    SeatAvailabilityResponse:
+      type: object
+      properties:
+        eventId: { type: string }
+        seatNumber: { type: string }
+        available: { type: string }
+        message: { type: string }
+    ReserveTicketRequest:
+      type: object
+      required: [eventId, userId, seatNumber, price]
+      properties:
+        eventId: { type: string }
+        userId: { type: string }
+        seatNumber: { type: string }
+        price:
+          type: number
+          format: double
+        promotionCode: { type: string }
+    ConfirmTicketReq:
+      type: object
+      required: [eventId, seatNumber, userId]
+      properties:
+        eventId: { type: string }
+        seatNumber: { type: string }
+        userId: { type: string }
+        price:
+          type: number
+          format: double
+        promotionCode: { type: string }
+

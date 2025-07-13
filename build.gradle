@@ -82,5 +82,41 @@ micronaut {
     }
 }
 
-s
+void generateServiceFilesOpenApi(String contractName, String basePackage) {
 
+    String taskName = "openApiGenerate_" + contractName
+    tasks.register(taskName, GenerateTask) {
+        generatorName = "spring"
+        inputSpec = "${project.projectDir}/src/main/resources/schema/${contractName}".toString()
+        outputDir = "${project.buildDir}/generated".toString()
+        modelPackage = "${basePackage}.model"
+        apiPackage = "${basePackage}.api"
+        skipValidateSpec = true
+        globalProperties = [
+                models: ""
+        ]
+        typeMappings = [
+                "local-date-time": "java.time.LocalDateTime"
+        ]
+        configOptions = [
+                dateLibrary: "java8",
+                useJakartaEe: "true",
+                additionalModelTypeAnnotation: "@com.fasterxml.jackson.annotation.JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.NON+NULL)",
+                hideGenerationTimestamp: "true",
+                openApiNullable: "false"
+        ]
+    }
+    compileJava.dependsOn(taskName)
+}
+
+
+def openApiSpecs = [
+        [name: "TicketService.yaml",
+        pkg: "com.ticket.booking"]
+]
+
+for (item in openApiSpecs) {
+    generateServiceFilesOpenApi(item.name, item.pkg)
+}
+
+sourceSets.main.java.srcDirs += "${project.buildDir}/generated/src/main/java"
