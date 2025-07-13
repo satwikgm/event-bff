@@ -1,0 +1,86 @@
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
+
+plugins {
+    id('java')
+    id("io.micronaut.application") version "4.5.4"
+    id("com.gradleup.shadow") version "8.3.7"
+    id("io.micronaut.aot") version "4.5.4"
+    id('org.openapi.generator') version "7.6.0"
+}
+
+version = "0.1"
+group = "com.eventBff"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Micronaut Core
+    implementation("io.micronaut:micronaut-runtime")
+    implementation("io.micronaut:micronaut-jackson-databind")
+    implementation("io.micronaut:micronaut-http-client")
+    implementation("io.micronaut:micronaut-http-server-netty")
+    implementation("io.micronaut.reactor:micronaut-reactor")
+    implementation("io.micronaut.validation:micronaut-validation")
+    implementation("io.micronaut.openapi:micronaut-openapi-annotations")
+
+    // Lombok and MapStruct
+    implementation("org.projectlombok:lombok:1.18.32")
+    implementation("org.mapstruct:mapstruct:1.5.5.Final")
+    annotationProcessor("org.projectlombok:lombok:1.18.32")
+    annotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")
+    annotationProcessor("io.micronaut:micronaut-inject-java")
+
+    // OPEANAPI generator dependencies
+    implementation("io.swagger.core.v3:swagger-annotations:2.2.21")
+
+    // Reactor
+    implementation("io.projectreactor:reactor-core:3.6.4")
+
+    // Jakarta validation for generated DTOs
+    implementation("jakarta.annotation:jakarta.annotation-api:2.1.1")
+    implementation("jakarta.validation:jakarta.validation-api:3.0.2")
+
+    // Logging
+    runtimeOnly("ch.qos.logback:logback-classic")
+
+    // TESTS
+    compileOnly("io.micronaut:micronaut-http-client")
+}
+
+
+application {
+    mainClass = "com.eventBff.Application"
+}
+java {
+    sourceCompatibility = JavaVersion.toVersion("17")
+    targetCompatibility = JavaVersion.toVersion("17")
+}
+
+
+graalvmNative.toolchainDetection = false
+
+micronaut {
+    runtime("netty")
+    testRuntime("junit5")
+    processing {
+        incremental(true)
+        annotations("com.eventBff.*")
+    }
+    aot {
+        // Please review carefully the optimizations enabled below
+        // Check https://micronaut-projects.github.io/micronaut-aot/latest/guide/ for more details
+        optimizeServiceLoading = false
+        convertYamlToJava = false
+        precomputeOperations = true
+        cacheEnvironment = true
+        optimizeClassLoading = true
+        deduceEnvironment = true
+        optimizeNetty = true
+        replaceLogbackXml = true
+    }
+}
+
+s
+
