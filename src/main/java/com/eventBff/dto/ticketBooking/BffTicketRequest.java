@@ -9,11 +9,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BffReserveTicketRequest {
-
+public class BffTicketRequest {
     private String eventId;
     private String userId;
-    private String seat;    // not seatNumber
-    private String amount;  // not price and Double
+    private String seatNumber;    // not seatNumber
+    private Double price;  // not price and Double
     private String promotionCode;
 }

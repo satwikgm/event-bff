@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BffReserveTicketResponse {
+public class BffTicketResponse {
     private String ticketId;
-    private String bookingStatus; // not status
+    private String status; // not status
     private String message;
     private String eventId;
 }
